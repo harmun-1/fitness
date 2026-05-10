@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Fit Plan">
+<title>Harmun's Fitness Programme</title>
+<style>
+  :root {
+    --bg: #faf9f6;
+    --panel: #ffffff;
+    --ink: #1a1f1c;
+    --muted: #5e6661;
+    --line: #e3e1d9;
+    --accent: #2f6f5e;
+    --accent-soft: #e6f0ec;
+    --warn: #c0492b;
+    --warn-soft: #fbe9e3;
+    --good: #3a7d44;
+    --good-soft: #e8f2ea;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    background: var(--ink);
+    color: #f5f3ec;
+    padding: 20px 20px 16px;
+    padding-top: calc(20px + env(safe-area-inset-top));
+  }
+  header .wrap { max-width: 980px; margin: 0 auto; }
+  header h1 {
+    font-size: 22px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+  header p {
+    margin: 0;
+    color: #b9bfb8;
+    font-size: 13px;
+  }
+  nav {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  nav .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  nav .wrap::-webkit-scrollbar { display: none; }
+  nav button {
+    flex: 0 0 auto;
+    background: transparent;
+    border: none;
+    padding: 14px 14px;
+    font-size: 14px;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-family: inherit;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+  nav button:hover { color: var(--ink); }
+  nav button.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 24px 18px 80px;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  section { display: none; }
+  section.active { display: block; }
+  section h2 {
+    font-size: 20px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+  section .lede {
+    color: var(--muted);
+    margin: 0 0 20px;
+    font-size: 14px;
+  }
+  h3 {
+    font-size: 16px;
+    margin: 24px 0 8px;
+    font-weight: 600;
+  }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  strong { font-weight: 600; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 12px 0;
+  }
+  .card.accent { border-left: 3px solid var(--accent); background: var(--accent-soft); }
+  .card.warn { border-left: 3px solid var(--warn); background: var(--warn-soft); }
+  .card.good { border-left: 3px solid var(--good); background: var(--good-soft); }
+  .card h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 12px 0;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .stat .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .stat .value {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .stat .sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    background: #f1efe7;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  tr:last-child td { border-bottom: none; }
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--accent-soft);
+    color: var(--accent);
+    margin-right: 4px;
+  }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.good { background: var(--good-soft); color: var(--good); }
+  .check {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 11px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .check input[type="checkbox"] {
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .check label { flex: 1; cursor: pointer; font-size: 15px; }
+  .check label.done { text-decoration: line-through; color: var(--muted); }
+  .check:last-child { border-bottom: none; }
+  .meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 24px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  hr { border: none; border-top: 1px solid var(--line); margin: 20px 0; }
+
+  /* Today tab specific */
+  .today-day {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .today-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+    line-height: 1.2;
+  }
+  .today-date {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .workout-type {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .workout-type.gym { background: #e6f0ec; color: #2f6f5e; }
+  .workout-type.zone2 { background: #e8f0fb; color: #2b5abd; }
+  .workout-type.rest { background: #f0ede6; color: #7a6a4e; }
+  .exercise-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 6px;
+  }
+  .exercise-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+  .exercise-list li:last-child { border-bottom: none; }
+  .exercise-list li::before {
+    content: '·';
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .note-text {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    margin: 8px 0 0;
+  }
+  .section-divider {
+    height: 1px;
+    background: var(--line);
+    margin: 20px 0;
+  }
+
+  @media (max-width: 480px) {
+    body { font-size: 15px; }
+    table { font-size: 13px; }
+    th, td { padding: 8px 8px; }
+  }
+  @media print {
+    nav { display: none; }
+    section { display: block !important; page-break-after: always; }
+    header { background: #fff; color: #000; border-bottom: 2px solid #000; }
+    header p { color: #555; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>Harmun's Fitness Programme</h1>
+    <p>88 kg → 81 kg · Zone 2 · Wrist-safe · Riyadh · Last updated 10 May 2026</p>
+  </div>
+</header>
+
+<nav>
+  <div class="wrap" id="tabs">
+    <button class="tab active" data-tab="today">Today</button>
+    <button class="tab" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="schedule">Day</button>
+    <button class="tab" data-tab="training">Training</button>
+    <button class="tab" data-tab="nutrition">Nutrition</button>
+    <button class="tab" data-tab="mealplan">Meal plan</button>
+    <button class="tab" data-tab="supplements">Supplements</button>
+    <button class="tab" data-tab="wrist">Wrist</button>
+    <button class="tab" data-tab="knee">Knee</button>
+    <button class="tab" data-tab="mobility">Mobility</button>
+    <button class="tab" data-tab="sleep">Sleep</button>
+    <button class="tab" data-tab="sweet">Sweet tooth</button>
+    <button class="tab" data-tab="action">Actions</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- TODAY (populated by JS) -->
+<section id="today" class="active">
+  <div id="today-content"><!-- filled by JS --></div>
+</section>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <h2>Where you are, where you're going</h2>
+  <p class="lede">Top-line numbers and the three things that actually move the needle.</p>
+
+  <div class="grid">
+    <div class="stat"><div class="label">Current</div><div class="value">88 kg</div><div class="sub">Age 33, Riyadh</div></div>
+    <div class="stat"><div class="label">Target</div><div class="value">81 kg</div><div class="sub">~7 kg fat loss</div></div>
+    <div class="stat"><div class="label">Pace</div><div class="value">0.5 kg/wk</div><div class="sub">Sustainable, protects muscle</div></div>
+    <div class="stat"><div class="label">ETA</div><div class="value">~14 weeks</div><div class="sub">Mid-August 2026</div></div>
+  </div>
+
+  <h3>The three things that move the needle</h3>
+  <div class="card accent">
+    <h4>1. Eat in a 500 kcal deficit, hit your protein</h4>
+    <p>You don't need a perfect diet. You need a daily protein floor (160 g) and a calorie ceiling (~2,300 kcal). Get those right and the rest is noise.</p>
+  </div>
+  <div class="card accent">
+    <h4>2. Sleep at 10:30pm, not 1am</h4>
+    <p>Two extra hours of sleep will do more for your wrists, your fat loss, and your patience with the kids than any tweak to the gym programme. The football is the lever — see the Sleep tab.</p>
+  </div>
+  <div class="card accent">
+    <h4>3. Rehab the wrists and the left knee, properly this time</h4>
+    <p>Wrists: full rest for 4 weeks, splint at night, collagen pre-gym. Knee: VMO and patella tracking work — the exact protocol the surgeon prescribed in 2022 that you never followed through on.</p>
+  </div>
+
+  <h3>The big rocks</h3>
+  <table>
+    <tr><th>Area</th><th>Status</th><th>Priority</th></tr>
+    <tr><td>Fat loss</td><td>Stated #1 goal — diet is dialled in conceptually, execution is the gap</td><td><span class="pill">Daily</span></td></tr>
+    <tr><td>Wrist tendinitis (bilateral)</td><td>Active flare — splint at night, sometimes day. Specialist advised full rest.</td><td><span class="pill warn">Acute</span></td></tr>
+    <tr><td>Left knee</td><td>Fat pad impingement + mild patellar tendinopathy. ACL intact. MRI confirmed 2022.</td><td><span class="pill">Chronic, manageable</span></td></tr>
+    <tr><td>Sleep</td><td>6–7h, drifting late due to UK football</td><td><span class="pill warn">Acute</span></td></tr>
+    <tr><td>Mobility / thoracic tension</td><td>Constant tightness, flare-ups, desk-driven</td><td><span class="pill">Daily</span></td></tr>
+    <tr><td>Sweet tooth</td><td>Improving on fibre-led diet but still a weak spot, especially 3:30pm</td><td><span class="pill">Behavioural</span></td></tr>
+  </table>
+
+  <div class="card good">
+    <h4>What you've already got right</h4>
+    <p>The 5pm dinner, the kefir-and-chia breakfast, the gut-health diet direction, batch-cooked lunches, and a consistent gym slot before the workday — these are the foundations most people never build. The whole programme assumes them and works around them.</p>
+  </div>
+</section>
+
+<!-- DAILY SCHEDULE -->
+<section id="schedule">
+  <h2>Day in the life — Riyadh week</h2>
+  <p class="lede">Sunday to Thursday. Friday and Saturday are family days, no gym, but the eating window stays.</p>
+
+  <table>
+    <tr><th>Time</th><th>What</th><th>Notes</th></tr>
+    <tr><td>6:30am</td><td>Wake, kids ready</td><td>Splints come off. Hydrate immediately — 500 ml water.</td></tr>
+    <tr><td>7:15am</td><td>ACV drink</td><td>1 tbsp ACV + 1 tsp honey in water. <strong>Through a straw.</strong> No chia in this drink.</td></tr>
+    <tr><td>7:30–8:00am</td><td>School drop-off</td><td>—</td></tr>
+    <tr><td>7:50am</td><td>Pre-gym collagen</td><td>10–15 g collagen peptides + 500 mg vitamin C in water. Drink in the car or on arrival.</td></tr>
+    <tr><td>8:00–9:30am</td><td>Gym</td><td>Zone 2 cardio + wrist-safe lower body, alternating days.</td></tr>
+    <tr><td>9:30am</td><td>Post-gym shake</td><td>1 scoop whey + <strong>5 g</strong> creatine (not 10).</td></tr>
+    <tr><td>10:00am</td><td>Desk</td><td>First call standing, if possible.</td></tr>
+    <tr><td>10:30am</td><td>Breakfast</td><td>Kefir + live yoghurt + chia + fruit + almonds + seeds + dates. White americano. ~500 kcal.</td></tr>
+    <tr><td>1:00pm</td><td>Lunch</td><td>Batch-cooked grain salad with protein. ~600 kcal.</td></tr>
+    <tr><td>2:20pm</td><td>School pickup</td><td>—</td></tr>
+    <tr><td>3:30pm</td><td>Snack</td><td><strong>Pre-planned only.</strong> Highest-risk window — see Sweet tooth tab.</td></tr>
+    <tr><td>5:00pm</td><td>Dinner</td><td>Fresh-cooked, family meal. ~700 kcal. Eating window closes at 8pm.</td></tr>
+    <tr><td>7:30pm</td><td>Optional snack</td><td>If hungry only. Greek yoghurt + berries, or 30 g dark chocolate.</td></tr>
+    <tr><td>9:30pm</td><td>Mobility routine</td><td>10–15 min on the floor. Doubles as a sleep cue.</td></tr>
+    <tr><td>10:00pm</td><td>Wind-down</td><td>Splints on. Magnesium glycinate (300–400 mg). Lights down. Phone away.</td></tr>
+    <tr><td>10:30pm</td><td>Sleep target</td><td>Aim for 7.5 hours.</td></tr>
+  </table>
+
+  <div class="card accent">
+    <h4>Weekend variant (Fri/Sat)</h4>
+    <p>No gym. Keep the eating window roughly the same — kefir/chia breakfast at 9–10am instead of 10:30am, lunch around 1pm, dinner around 5–6pm. A 30–45 minute walk with the kids replaces the gym. Mobility routine stays nightly.</p>
+  </div>
+</section>
+
+<!-- TRAINING -->
+<section id="training">
+  <h2>Training — five mornings, 60–90 minutes</h2>
+  <p class="lede">Wrist-safe, knee-aware, fat-loss biased. Zone 2 is the engine. Lifting is for muscle retention while in deficit.</p>
+
+  <h3>The split</h3>
+  <table>
+    <tr><th>Day</th><th>Focus</th><th>Time</th></tr>
+    <tr><td>Sunday</td><td>Lower body (machine-based)</td><td>60 min</td></tr>
+    <tr><td>Monday</td><td>Zone 2 — incline walk</td><td>60–75 min</td></tr>
+    <tr><td>Tuesday</td><td>Lower body (posterior chain) + VMO work</td><td>60 min</td></tr>
+    <tr><td>Wednesday</td><td>Zone 2 — incline walk or bike</td><td>60–75 min</td></tr>
+    <tr><td>Thursday</td><td>Full-body wrist-safe + core</td><td>60 min</td></tr>
+    <tr><td>Fri / Sat</td><td>Family walk, mobility</td><td>30–45 min</td></tr>
+  </table>
+
+  <h3>Sunday — lower body (machines)</h3>
+  <p>All wrist-safe. Knee angles capped at ~90° to protect the fat pad.</p>
+  <ul>
+    <li>Leg press (feet high on platform) — 4 × 10–12, stop at 90°</li>
+    <li>Hamstring curl (lying or seated machine) — 4 × 10–12</li>
+    <li>Hip abductor machine — 3 × 12–15</li>
+    <li>Hip adductor machine — 3 × 12–15</li>
+    <li>Calf raise (smith bar on shoulders, no wrist load) — 3 × 12–15</li>
+    <li>Walking finisher: 10 min incline, 4–5 km/h, 8–10% gradient</li>
+  </ul>
+
+  <h3>Tuesday — posterior chain + VMO</h3>
+  <ul>
+    <li>Romanian deadlift (with straps — no grip load) — 4 × 8–10</li>
+    <li>Glute bridge / hip thrust on bench — 3 × 10–12</li>
+    <li>Cable pull-through (rope, with straps if grip aggravates) — 3 × 12</li>
+    <li><strong>VMO work — see Knee tab.</strong> 3 × 10 each side, terminal knee extension or step-up.</li>
+    <li>Bulgarian split squat (light, bodyweight or single dumbbell, knee tracking over toes) — 3 × 8 each side</li>
+    <li>Walking finisher: 10 min incline</li>
+  </ul>
+
+  <h3>Thursday — full-body wrist-safe + core</h3>
+  <ul>
+    <li>Chest press machine (no wrist extension, neutral grip if available) — 3 × 10–12</li>
+    <li>Seated cable row with straps — 3 × 10–12</li>
+    <li>Lat pulldown with straps — 3 × 10–12</li>
+    <li>Cable face pull (rope) — 3 × 12–15</li>
+    <li>Dead bug — 3 × 10 each side</li>
+    <li>Bird dog — 3 × 10 each side</li>
+    <li>Side plank (forearm, not hand) — 3 × 30 sec each side</li>
+    <li>Pallof press (cable, anti-rotation) — 3 × 10 each side</li>
+  </ul>
+
+  <h3>Monday & Wednesday — Zone 2</h3>
+  <p>Treadmill on incline, 4–5 km/h, 8–12% gradient, or stationary bike if you want a change. Heart rate target: 130–145 bpm. You should be able to hold a conversation but not comfortably sing.</p>
+  <p>Bring something to listen to. 60–75 minutes goes fast with a podcast or a long audiobook chapter.</p>
+
+  <div class="card warn">
+    <h4>Off the table while wrists flare</h4>
+    <p>No barbell pressing. No barbell rows. No pull-ups. No push-ups. No kettlebell anything. No farmer's carries. No gripping a heavy dumbbell — use straps for everything, or stick to machines.</p>
+  </div>
+
+  <div class="card warn">
+    <h4>Off the table for the knee — permanently</h4>
+    <p>No running. No jumping. No deep squats under load. No lateral plyometrics. No hockey, even casual. The MRI was clean but the fat pad and tendon don't tolerate repeated impact and deep flexion.</p>
+  </div>
+</section>
+
+<!-- NUTRITION -->
+<section id="nutrition">
+  <h2>Nutrition — principles and targets</h2>
+  <p class="lede">Fat loss is the priority. Gut health is the lever you've already pulled. The rest is hitting numbers.</p>
+
+  <h3>Daily targets</h3>
+  <div class="grid">
+    <div class="stat"><div class="label">Calories</div><div class="value">2,300 kcal</div><div class="sub">~500 kcal deficit</div></div>
+    <div class="stat"><div class="label">Protein</div><div class="value">160 g</div><div class="sub">~1.8 g/kg</div></div>
+    <div class="stat"><div class="label">Fat</div><div class="value">70 g</div><div class="sub">~28% of calories</div></div>
+    <div class="stat"><div class="label">Carbs</div><div class="value">240 g</div><div class="sub">~42% of calories</div></div>
+    <div class="stat"><div class="label">Fibre</div><div class="value">35–40 g</div><div class="sub">30 plants/week</div></div>
+    <div class="stat"><div class="label">Water</div><div class="value">3 L</div><div class="sub">More on training days</div></div>
+  </div>
+
+  <p>The numbers above are estimates. The real feedback signal is your weight on a Sunday morning over a 4-week rolling average. If it's not dropping, eat 100 kcal less and try another two weeks.</p>
+
+  <h3>The eating window</h3>
+  <p>You eat between 10:30am and 8pm. That's a ~9.5-hour window — closer to time-restricted eating than to intermittent fasting, which is exactly right for someone training fasted in the morning. Don't shorten it further or you'll under-eat protein.</p>
+
+  <h3>Gut health rules (Tim Spector approach)</h3>
+  <ul>
+    <li><strong>30 plants a week.</strong> Track them loosely. Each unique plant — a herb, a spice, a different colour pepper — counts.</li>
+    <li><strong>Fermented foods every day.</strong> Kefir in the chia pudding. Kimchi or sauerkraut at lunch. Live yoghurt as a snack base.</li>
+    <li><strong>Polyphenols.</strong> Olive oil, dark chocolate (85%+), berries, green tea, nuts.</li>
+    <li><strong>Fibre over the day, not in one hit.</strong> The chia pudding is ~12 g already. Spread the rest across lunch and dinner.</li>
+    <li><strong>Minimise UPFs.</strong> If it has a long ingredient list and you couldn't recognise half of them, leave it.</li>
+  </ul>
+
+  <h3>What to do about alcohol</h3>
+  <p>Not raised in our conversation. If you drink, every drink is a fat-loss tax. Two beers is roughly 350 kcal you didn't plan for, plus a hit to sleep quality and recovery. Keep it to weekend social occasions only while in the deficit phase.</p>
+
+  <h3>Riyadh-specific notes</h3>
+  <ul>
+    <li><strong>Carrefour and Danube</strong> stock kefir, live yoghurt, kimchi, sauerkraut, salmon, frozen berries. Tamimi is good for organic produce.</li>
+    <li><strong>Local markets</strong> for fresh herbs, dates, and seasonal fruit — much cheaper and fresher.</li>
+    <li><strong>Eating out:</strong> Levantine, Yemeni, and Turkish are all easy on this plan — grilled protein, salads, hummus, tabbouleh, pickles. Avoid fried, avoid bread baskets, avoid sugary mocktails.</li>
+  </ul>
+</section>
+
+<!-- 5-DAY MEAL PLAN -->
+<section id="mealplan">
+  <h2>5-day meal plan — Sunday to Thursday</h2>
+  <p class="lede">Built around the chia pudding breakfast, batch-cooked lunches, fresh family dinners, and a planned 3:30pm snack. ~2,300 kcal/day, ~160 g protein.</p>
+
+  <div class="card accent">
+    <h4>The pattern, not the prescription</h4>
+    <p>Treat this as one realistic week. Once you've done it twice you'll have your own rotation. The lunches are batch-cooked Sunday morning and last to Thursday. The dinners assume Neelam's cooking continues — feed your portion into the totals.</p>
+  </div>
+
+  <h3>Sunday</h3>
+  <table>
+    <tr><th>Meal</th><th>What</th><th>Approx</th></tr>
+    <tr><td>10:30am</td><td>Chia pudding: 30 g chia, 200 ml kefir, 100 g live yoghurt, mixed berries, 15 g almonds, 10 g pumpkin seeds, 2 dates</td><td>~520 kcal, 22 g P</td></tr>
+    <tr><td>1:00pm</td><td>Bulgur wheat salad with grilled chicken (150 g), feta (40 g), cucumber, tomato, parsley, mint, lemon-olive oil dressing</td><td>~620 kcal, 50 g P</td></tr>
+    <tr><td>3:30pm</td><td>Apple + 25 g almond butter</td><td>~250 kcal, 7 g P</td></tr>
+    <tr><td>5:00pm</td><td>Grilled salmon (180 g), roast veg medley, side salad with olive oil</td><td>~620 kcal, 42 g P</td></tr>
+    <tr><td>7:30pm</td><td>Optional: 150 g Greek yoghurt + cinnamon</td><td>~140 kcal, 15 g P</td></tr>
+    <tr><td><strong>Total</strong></td><td></td><td><strong>~2,150 kcal, 136 g P</strong></td></tr>
+  </table>
+
+  <h3>Monday</h3>
+  <table>
+    <tr><th>Meal</th><th>What</th><th>Approx</th></tr>
+    <tr><td>10:30am</td><td>Chia pudding (same base, swap berries for mango + walnuts)</td><td>~520 kcal, 22 g P</td></tr>
+    <tr><td>1:00pm</td><td>Quinoa salad with prawns (150 g), chickpeas, roasted peppers, rocket, lemon-tahini dressing</td><td>~600 kcal, 45 g P</td></tr>
+    <tr><td>3:30pm</td><td>Carrot sticks + 50 g hummus + 6 olives</td><td>~210 kcal, 6 g P</td></tr>
+    <tr><td>5:00pm</td><td>Chicken thigh curry (180 g chicken), brown basmati (½ cup cooked), spinach, cucumber raita</td><td>~700 kcal, 48 g P</td></tr>
+    <tr><td>7:30pm</td><td>30 g 85% dark chocolate</td><td>~170 kcal, 2 g P</td></tr>
+    <tr><td><strong>Total</strong></td><td></td><td><strong>~2,200 kcal, 123 g P</strong></td></tr>
+  </table>
+
+  <h3>Tuesday</h3>
+  <table>
+    <tr><th>Meal</th><th>What</th><th>Approx</th></tr>
+    <tr><td>10:30am</td><td>Chia pudding (banana + cocoa nibs + flaxseed)</td><td>~520 kcal, 22 g P</td></tr>
+    <tr><td>1:00pm</td><td>Freekeh salad with grilled salmon (150 g), pomegranate, mint, parsley, walnuts, lemon-olive oil</td><td>~640 kcal, 42 g P</td></tr>
+    <tr><td>3:30pm</td><td>200 g Greek yoghurt + 15 g honey + 10 g pistachios</td><td>~280 kcal, 18 g P</td></tr>
+    <tr><td>5:00pm</td><td>Beef kofta (180 g), tabbouleh, fattoush, baba ganoush (2 tbsp), 1 small pita</td><td>~700 kcal, 45 g P</td></tr>
+    <tr><td>7:30pm</td><td>Optional skip — UK football night, plan ahead</td><td>—</td></tr>
+    <tr><td><strong>Total</strong></td><td></td><td><strong>~2,140 kcal, 127 g P</strong></td></tr>
+  </table>
+
+  <h3>Wednesday</h3>
+  <table>
+    <tr><th>Meal</th><th>What</th><th>Approx</th></tr>
+    <tr><td>10:30am</td><td>Chia pudding (raspberry + sunflower seeds + 1 tsp cocoa)</td><td>~520 kcal, 22 g P</td></tr>
+    <tr><td>1:00pm</td><td>Lentil + roast veg salad with halloumi (80 g) and grilled chicken (100 g), rocket, balsamic-olive oil</td><td>~620 kcal, 50 g P</td></tr>
+    <tr><td>3:30pm</td><td>Hard-boiled eggs (2) + 1 piece fruit</td><td>~220 kcal, 14 g P</td></tr>
+    <tr><td>5:00pm</td><td>Lemon-herb chicken (200 g), roasted sweet potato, broccoli, kimchi (2 tbsp)</td><td>~700 kcal, 50 g P</td></tr>
+    <tr><td>7:30pm</td><td>Optional: 150 g Greek yoghurt + berries</td><td>~140 kcal, 15 g P</td></tr>
+    <tr><td><strong>Total</strong></td><td></td><td><strong>~2,200 kcal, 151 g P</strong></td></tr>
+  </table>
+
+  <h3>Thursday</h3>
+  <table>
+    <tr><th>Meal</th><th>What</th><th>Approx</th></tr>
+    <tr><td>10:30am</td><td>Chia pudding (apple + cinnamon + walnut)</td><td>~520 kcal, 22 g P</td></tr>
+    <tr><td>1:00pm</td><td>Last of batch lunches, or a Levantine bowl: chickpeas, tabbouleh, hummus, grilled chicken (150 g), pickles</td><td>~600 kcal, 45 g P</td></tr>
+    <tr><td>3:30pm</td><td>Cottage cheese (150 g) + cucumber + black pepper, or 30 g mixed nuts</td><td>~220 kcal, 18 g P</td></tr>
+    <tr><td>5:00pm</td><td>Dal makhani (small portion) + chicken tikka (180 g) + cauliflower rice + cucumber salad</td><td>~700 kcal, 50 g P</td></tr>
+    <tr><td>7:30pm</td><td>30 g 85% dark chocolate + green tea</td><td>~170 kcal, 2 g P</td></tr>
+    <tr><td><strong>Total</strong></td><td></td><td><strong>~2,210 kcal, 137 g P</strong></td></tr>
+  </table>
+
+  <h3>Sunday batch cook (90 min)</h3>
+  <p>Cook all five lunch grains and proteins in one go on Sunday morning.</p>
+  <ul>
+    <li>Cook a big pot of bulgur (Sun), quinoa (Mon), freekeh (Tue), and Puy lentils (Wed). 200 g dry of each.</li>
+    <li>Grill 1 kg chicken thighs, season half Middle Eastern, half lemon-pepper. Slice and divide.</li>
+    <li>Roast a tray of mixed veg: peppers, courgette, red onion, sweet potato.</li>
+    <li>Make a lemon-tahini dressing and a lemon-olive oil dressing in jars. They'll keep all week.</li>
+    <li>Buy salmon and prawns fresh on Monday for that day's lunch.</li>
+    <li>Pre-portion the chia bases on Saturday night for the whole week — that's 5 jars done in 10 minutes.</li>
+  </ul>
+
+  <div class="card good">
+    <h4>If you do nothing else</h4>
+    <p><strong>Pre-make the chia jars Saturday night</strong>, and <strong>plan the 3:30pm snack the morning of</strong>. Those two habits remove most of the willpower load from your week.</p>
+  </div>
+</section>
+
+<!-- SUPPLEMENTS -->
+<section id="supplements">
+  <h2>Supplements — what to take, when, why</h2>
+  <p class="lede">Three corrections from your current stack, two additions, one to drop.</p>
+
+  <h3>Daily stack</h3>
+  <table>
+    <tr><th>Supplement</th><th>Dose</th><th>When</th><th>Purpose</th></tr>
+    <tr><td>ACV + honey + water</td><td>1 tbsp ACV, 1 tsp honey</td><td>7:15am</td><td>Habit you've built. Use a straw — protects enamel. <strong>No chia in this drink.</strong></td></tr>
+    <tr><td>Collagen peptides + vitamin C</td><td>10–15 g collagen, 500 mg vit C</td><td>7:50am (30 min pre-gym)</td><td>Best-evidence intervention for tendon repair. Critical for the wrists and knee tendinopathy.</td></tr>
+    <tr><td>Whey protein</td><td>1 scoop (~25 g)</td><td>9:30am, post-gym</td><td>Hits the daily protein target.</td></tr>
+    <tr><td>Creatine monohydrate</td><td><strong>5 g</strong> (not 10)</td><td>9:30am, with the shake</td><td>You were taking double the effective dose. 5 g/day is the maximum useful intake.</td></tr>
+    <tr><td>Vitamin D3</td><td>2,000–4,000 IU</td><td>With breakfast</td><td>Indoors-heavy lifestyle in Riyadh + low sun exposure. Get a blood test.</td></tr>
+    <tr><td>Magnesium glycinate</td><td>300–400 mg</td><td>10:00pm, before bed</td><td>Sleep quality, muscle relaxation, gut motility. Glycinate, not citrate.</td></tr>
+    <tr><td>Omega-3 (fish oil)</td><td>2 g EPA+DHA</td><td>With dinner</td><td>Tendon health, anti-inflammatory. Skip on days you eat oily fish.</td></tr>
+  </table>
+
+  <div class="card warn">
+    <h4>Drop creatine from 10 g to 5 g</h4>
+    <p>The research is unambiguous. Anything above 5 g/day after saturation goes straight through your kidneys. You're not getting more benefit, you're just paying more for creatine.</p>
+  </div>
+  <div class="card warn">
+    <h4>Don't bring chia back to the ACV drink</h4>
+    <p>The stomach ache wasn't paranoia. Soaked chia + ACV on an empty stomach is a lot for a sleepy gut. Your 10:30am chia pudding is the right place.</p>
+  </div>
+  <div class="card warn">
+    <h4>Use a straw for the ACV drink</h4>
+    <p>Daily acid bath on your front teeth is bad over a 5–10 year horizon. Straw, then rinse with water. Don't brush for 30 minutes after.</p>
+  </div>
+
+  <h3>Where to buy in Riyadh</h3>
+  <ul>
+    <li><strong>Nahdi pharmacy</strong> — magnesium glycinate, vitamin D3, omega-3, vitamin C. Branches everywhere.</li>
+    <li><strong>GNC (Hayat Mall, Al Nakheel)</strong> — collagen peptides, whey, creatine.</li>
+    <li><strong>iHerb (ships to KSA)</strong> — usually cheaper for collagen, magnesium, and brand selection. Allow 1–2 weeks.</li>
+    <li><strong>Dukan and Carrefour</strong> — basic whey, creatine, fish oil.</li>
+  </ul>
+
+  <div class="card accent">
+    <h4>Suggested brands</h4>
+    <p>Collagen: Vital Proteins or NOW Foods unflavoured peptides. Magnesium glycinate: Doctor's Best or Pure Encapsulations. Omega-3: Nordic Naturals or Carlson. All on iHerb.</p>
+  </div>
+</section>
+
+<!-- WRIST -->
+<section id="wrist">
+  <h2>Wrist rehab — bilateral tendinitis</h2>
+  <p class="lede">The specialist said full rest for a month. Two young kids at home make that impossible. Here's the closest you can get.</p>
+
+  <h3>The non-negotiables</h3>
+  <ul>
+    <li><strong>Splint at night, every night.</strong> No exceptions. Sleep is when the tendon repairs.</li>
+    <li><strong>Splint during the day during flares.</strong> Type with the splint on if needed.</li>
+    <li><strong>No gripping heavy things.</strong> Use straps for any pulling exercise.</li>
+    <li><strong>Collagen + vitamin C, 30 minutes before any loading.</strong> The 30-minute window matters.</li>
+  </ul>
+
+  <h3>What you can do safely with the kids</h3>
+  <ul>
+    <li>Keep the wrist neutral when picking up Kira — don't bend it back.</li>
+    <li>Use both arms whenever possible.</li>
+    <li>Carry her with the affected arm in a more supported position — across your forearm rather than at the wrist.</li>
+    <li>If the splint is on, leave it on while you lift her if needed.</li>
+  </ul>
+
+  <h3>Re-introduction protocol</h3>
+  <ol>
+    <li><strong>Week 1:</strong> Isometric wrist holds. Push hand against a wall in flexion and extension, 5 × 30 sec, twice a day.</li>
+    <li><strong>Week 2:</strong> Light dumbbell wrist curls — 1–2 kg, 3 × 15, slow. Both flexion and extension.</li>
+    <li><strong>Week 3:</strong> Add reverse wrist curls and forearm rotations. Same load, increase reps to 20.</li>
+    <li><strong>Week 4:</strong> Light farmer's carries — 8 kg dumbbells, 30 m, 3 sets.</li>
+    <li><strong>Week 5+:</strong> Slowly re-introduce machine pressing with neutral grip. Stop if symptoms return.</li>
+  </ol>
+
+  <div class="card accent">
+    <h4>The honest truth on tendinitis</h4>
+    <p>Tendons heal slowly — months, not weeks. The temptation when it feels 80% better is to test it with something heavy. That's how it flares again. The collagen, the splint, the machine work, and the patience are the protocol. There is no shortcut.</p>
+  </div>
+</section>
+
+<!-- KNEE -->
+<section id="knee">
+  <h2>Knee protocol — left knee, fat pad impingement</h2>
+  <p class="lede">From your 2022 MRI: ACL intact, meniscus intact, joint surface normal. Fat pad impingement + mild patellar tendinopathy + slightly mobile patella. All three respond to VMO and patella tracking work.</p>
+
+  <h3>The diagnosis in plain English</h3>
+  <p>Your kneecap doesn't track in a perfectly straight line during movement. It glides slightly outwards, pinching the Hoffa's fat pad below the kneecap and irritating the patellar tendon. The fix is strengthening the VMO (inner quad), which pulls the kneecap medially and corrects the tracking. The surgeon prescribed exactly this in 2022. You never followed through. This is your second chance.</p>
+
+  <h3>Daily VMO and tracking work — 10 minutes, every day</h3>
+  <ol>
+    <li><strong>Terminal knee extension (TKE)</strong> — sit on a chair, lift the foot until the knee is straight, hold 5 seconds, lower slowly. 3 × 15 each leg.</li>
+    <li><strong>Wall sit with squeeze</strong> — back against wall, knees at 60°, small ball between knees, squeeze and hold 30 sec. 3 sets.</li>
+    <li><strong>Step-ups (low step, 15–20 cm)</strong> — slow, controlled, knee tracking over second toe. 3 × 10 each side.</li>
+    <li><strong>Glute bridge with knee squeeze</strong> — towel between knees, squeeze as you bridge up. 3 × 12.</li>
+    <li><strong>Side-lying clamshells</strong> — band above the knees, 3 × 15 each side.</li>
+  </ol>
+
+  <h3>What to avoid — permanently</h3>
+  <ul>
+    <li>Running</li>
+    <li>Deep squats under load (cap all knee work at 90°)</li>
+    <li>Lunges with a forward knee track</li>
+    <li>Hockey, football, basketball, tennis — anything with cutting or impact</li>
+  </ul>
+
+  <h3>What's safe and recommended</h3>
+  <ul>
+    <li>Incline walking</li>
+    <li>Cycling (stationary or outdoor)</li>
+    <li>Swimming (front crawl, not breaststroke kick)</li>
+    <li>Leg press to 90°, hamstring curls, Romanian deadlift, hip thrust</li>
+  </ul>
+
+  <div class="card accent">
+    <h4>One physio session worth booking</h4>
+    <p>Find a sports physio in Riyadh and book a single session. Show them this page and the 2022 surgeon letter. Bupa Riyadh and Saudi German Hospital both have decent sports physio departments.</p>
+  </div>
+</section>
+
+<!-- MOBILITY -->
+<section id="mobility">
+  <h2>Mobility & desk habits</h2>
+  <p class="lede">10–15 minutes nightly. Plus actually using the standing desk you already own.</p>
+
+  <h3>Evening mobility — 12 minutes, before bed</h3>
+  <ol>
+    <li><strong>Thoracic opener over a rolled towel — 2 min.</strong> Lie on your back with a tightly rolled bath towel placed across your mid-back, arms out wide or overhead. Breathe slowly. This is the single highest-impact stretch in the routine.</li>
+    <li><strong>Cat-cow — 1 min.</strong> Slow, breath-led.</li>
+    <li><strong>Thread-the-needle — 1 min each side.</strong> On all fours, slide one arm under the other through the gap.</li>
+    <li><strong>90/90 hip stretch — 1 min each side.</strong> Front leg bent at 90° in front, back leg bent at 90° behind.</li>
+    <li><strong>Pigeon stretch — 1 min each side.</strong> Front shin across the body, back leg straight.</li>
+    <li><strong>Couch stretch (hip flexor) — 1 min each side.</strong> Back foot on low sofa, front foot forward in a lunge.</li>
+    <li><strong>Doorway pec stretch — 30 sec each side.</strong> Forearm on the doorframe, lean through.</li>
+    <li><strong>Neck releases — 1 min.</strong> Slow head circles, ear-to-shoulder holds.</li>
+    <li><strong>Child's pose — 1 min.</strong> Wind-down close.</li>
+  </ol>
+
+  <div class="card warn">
+    <h4>The standing desk problem</h4>
+    <p>You own the solution. You're not using it. Stand for two things every day: your first call, and the 30 minutes after lunch. That's it. No heroics needed.</p>
+  </div>
+
+  <h3>Micro-resets during the working day</h3>
+  <p>Set a 90-minute timer. When it goes off: stand up, walk to the kitchen, drink water, do 10 wall slides, roll the shoulders back. Two minutes. Will not break your workflow.</p>
+</section>
+
+<!-- SLEEP -->
+<section id="sleep">
+  <h2>Sleep — 6.5h to 7.5h</h2>
+  <p class="lede">The single biggest lever in this whole programme. An hour more sleep will do more for fat loss and tendon recovery than any change to training or diet.</p>
+
+  <h3>The target</h3>
+  <p>Bedtime by 10:30pm. Sleep by 11pm. Up at 6:30am. That's 7.5 hours, every weekday. You're currently sleeping at 12–1am. The route is the football, not your willpower.</p>
+
+  <h3>The football policy</h3>
+  <table>
+    <tr><th>UK kickoff</th><th>KSA kickoff</th><th>KSA finish</th><th>Verdict</th></tr>
+    <tr><td>12:30pm Sat</td><td>3:30pm</td><td>~5:30pm</td><td>Fine — weekend afternoon.</td></tr>
+    <tr><td>3:00pm Sat</td><td>6:00pm</td><td>~8:00pm</td><td>Fine — weekend evening.</td></tr>
+    <tr><td>5:30pm Sat</td><td>8:30pm</td><td>~10:30pm</td><td>OK on Saturday only.</td></tr>
+    <tr><td>7:45pm Sat</td><td>10:45pm</td><td>~12:45am</td><td><strong>Skip live.</strong> Watch highlights Sunday morning.</td></tr>
+    <tr><td>8:00pm weekday (CL/EL)</td><td>11:00pm</td><td>~1:00am</td><td><strong>Skip live.</strong> Watch second half only, or highlights.</td></tr>
+  </table>
+
+  <p>The rule: if it kicks off after 9pm KSA time, don't watch it live on a Sun–Wed night. Pick one match per week to make an exception for.</p>
+
+  <h3>Wind-down, 9:30pm onwards</h3>
+  <ul>
+    <li><strong>9:30pm</strong> — mobility routine. Lights dimming.</li>
+    <li><strong>10:00pm</strong> — magnesium glycinate, splints on, brush teeth.</li>
+    <li><strong>10:15pm</strong> — phone on the charger across the room. Not in bed.</li>
+    <li><strong>10:30pm</strong> — in bed. Book or podcast on a speaker, not a screen.</li>
+    <li><strong>11:00pm</strong> — lights out.</li>
+  </ul>
+
+  <h3>The 7-day sleep test</h3>
+  <p>Bedtime at 10:30pm every weeknight. No screens after 10:15pm. Skip every live match kicking off after 9pm KSA time. Record how you feel at 6:30am on day 1, 4, and 7. Almost everyone who runs this experiment doesn't go back.</p>
+</section>
+
+<!-- SWEET TOOTH -->
+<section id="sweet">
+  <h2>Sweet tooth & 3:30pm danger zone</h2>
+  <p class="lede">You named this as a weak spot. The fibre/gut diet has improved it. Now you make it a non-issue.</p>
+
+  <h3>What's actually happening at 3:30pm</h3>
+  <p>You picked Roshan up at 2:20pm. Energy is dipping. You're back in the house with food in the cupboards. Decision fatigue from the morning is high. Willpower is low. The cookie is right there. This isn't a character flaw. It's the most predictable failure point in your entire eating day, and you can completely engineer it out by deciding the snack at 7am instead of 3:30pm.</p>
+
+  <div class="card accent">
+    <h4>The 3:30pm snack is decided in the morning, not the afternoon.</h4>
+    <p>Pick it at 7am. Put it on the kitchen counter where you'll see it. By 3:30pm, you don't make a decision — you eat the thing that's already out.</p>
+  </div>
+
+  <h3>Approved 3:30pm snacks (200–280 kcal each)</h3>
+  <ul>
+    <li>Apple + 25 g almond butter</li>
+    <li>200 g Greek yoghurt + 1 tbsp honey + pistachios</li>
+    <li>2 hard-boiled eggs + a piece of fruit</li>
+    <li>Carrot sticks + 50 g hummus + olives</li>
+    <li>30 g 85% dark chocolate + a handful of berries</li>
+    <li>Cottage cheese + cucumber + black pepper</li>
+    <li>Date-and-nut bar (homemade or ≤3 ingredients) + black coffee</li>
+  </ul>
+
+  <h3>The sweet treat economy</h3>
+  <ul>
+    <li><strong>Daily allowance:</strong> 30 g of 85% dark chocolate after dinner.</li>
+    <li><strong>Weekly allowance:</strong> One proper dessert at home, one out. Two chosen events — eat them, enjoy them, don't apologise.</li>
+    <li><strong>What gets cut:</strong> the unplanned biscuits, kids' leftover sweets off their plate, the half a pack of dates standing at the counter.</li>
+  </ul>
+
+  <div class="card good">
+    <h4>What you've already proved</h4>
+    <p>You said the gut-health diet has improved your weight and sweet cravings. Fibre, fermented foods, and protein at every meal flatten blood sugar swings. Keep doing what you're doing — it's working.</p>
+  </div>
+</section>
+
+<!-- ACTION LIST -->
+<section id="action">
+  <h2>Action list</h2>
+  <p class="lede">Today, this week, this month. Checkboxes save in your browser.</p>
+
+  <h3>Today</h3>
+  <div class="check"><input type="checkbox" id="a1"><label for="a1"><strong>Drop creatine to 5 g.</strong> No reason to wait.</label></div>
+  <div class="check"><input type="checkbox" id="a2"><label for="a2"><strong>Start using a straw for the ACV drink.</strong> Buy a metal one if you don't have one.</label></div>
+  <div class="check"><input type="checkbox" id="a3"><label for="a3"><strong>Splint on every night, no exceptions.</strong> Set a phone reminder for 10pm.</label></div>
+  <div class="check"><input type="checkbox" id="a4"><label for="a4"><strong>Do the evening mobility routine tonight.</strong> 12 minutes. Thoracic opener is the most important.</label></div>
+
+  <h3>This week</h3>
+  <div class="check"><input type="checkbox" id="b1"><label for="b1"><strong>Buy collagen peptides + vitamin C.</strong> GNC at Hayat Mall, or iHerb.</label></div>
+  <div class="check"><input type="checkbox" id="b2"><label for="b2"><strong>Buy magnesium glycinate.</strong> Nahdi pharmacy. 300–400 mg at 10pm.</label></div>
+  <div class="check"><input type="checkbox" id="b3"><label for="b3"><strong>Run the 7-day sleep test.</strong> Bedtime 10:30pm weeknights. Skip every live match kicking off after 9pm KSA.</label></div>
+  <div class="check"><input type="checkbox" id="b4"><label for="b4"><strong>Sunday batch cook.</strong> 90 minutes, all five lunch grains and proteins. Pre-portion chia jars Saturday night.</label></div>
+  <div class="check"><input type="checkbox" id="b5"><label for="b5"><strong>Raise the standing desk.</strong> First call of the day, standing.</label></div>
+  <div class="check"><input type="checkbox" id="b6"><label for="b6"><strong>Start the daily VMO routine.</strong> 10 minutes, every day. TKE + wall sit + step-ups + glute bridge + clamshells.</label></div>
+  <div class="check"><input type="checkbox" id="b7"><label for="b7"><strong>Plan tomorrow's 3:30pm snack tonight.</strong> Put it on the counter before bed.</label></div>
+
+  <h3>This month</h3>
+  <div class="check"><input type="checkbox" id="c1"><label for="c1"><strong>Book one sports physio session.</strong> Bupa or Saudi German Hospital. Show them this page and the 2022 surgeon letter.</label></div>
+  <div class="check"><input type="checkbox" id="c2"><label for="c2"><strong>Get a vitamin D blood test.</strong> Indoor lifestyle in Riyadh — likely deficient.</label></div>
+  <div class="check"><input type="checkbox" id="c3"><label for="c3"><strong>4-week wrist re-introduction protocol.</strong> Once flare settles for 7–10 days, start the isometric holds.</label></div>
+  <div class="check"><input type="checkbox" id="c4"><label for="c4"><strong>Weigh in weekly, Sunday morning.</strong> Track the 4-week rolling average — that's the real signal.</label></div>
+  <div class="check"><input type="checkbox" id="c5"><label for="c5"><strong>Review this programme at week 4.</strong> What's stuck, what hasn't, what needs adjusting.</label></div>
+
+  <h3>Working measurements</h3>
+  <table>
+    <tr><th>Metric</th><th>Now</th><th>Week 4 target</th><th>Week 14 target</th></tr>
+    <tr><td>Weight</td><td>88.0 kg</td><td>86.0 kg</td><td>81.0 kg</td></tr>
+    <tr><td>Sleep (avg)</td><td>6–7h</td><td>7h+</td><td>7.5h</td></tr>
+    <tr><td>Bedtime (avg)</td><td>12am–1am</td><td>11pm</td><td>10:30pm</td></tr>
+    <tr><td>Wrist flares</td><td>Frequent</td><td>Less frequent</td><td>Rare</td></tr>
+    <tr><td>Knee pain after activity</td><td>Occasional</td><td>Rare</td><td>None</td></tr>
+    <tr><td>30-plant week</td><td>Likely already</td><td>Tracked</td><td>Habit</td></tr>
+  </table>
+
+  <div class="meta">
+    Source documents in your Health Files folder: physio referral letter (2022), Tim Spalding orthopaedic surgeon letter (Feb 2022). Programme synthesised from those plus the May 2026 consultation notes. Last updated 10 May 2026.
+  </div>
+</section>
+
+</main>
+
+<script>
+// ─── Tab switching ───────────────────────────────────────────────
+const tabs = document.querySelectorAll('.tab');
+const sections = document.querySelectorAll('section');
+tabs.forEach(t => t.addEventListener('click', () => {
+  tabs.forEach(x => x.classList.remove('active'));
+  sections.forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById(t.dataset.tab).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}));
+
+// ─── Persistent checkboxes (action list — persists forever) ──────
+document.querySelectorAll('#action input[type="checkbox"]').forEach(cb => {
+  const key = 'hp_action_' + cb.id;
+  if (localStorage.getItem(key) === '1') cb.checked = true;
+  cb.addEventListener('change', () => {
+    localStorage.setItem(key, cb.checked ? '1' : '0');
+  });
+});
+
+// ─── Today tab ───────────────────────────────────────────────────
+const DAY_DATA = {
+  0: { // Sunday
+    name: 'Sunday',
+    type: 'gym',
+    typeLabel: 'Gym',
+    title: 'Lower body — machines',
+    exercises: [
+      'Leg press (feet high, stop at 90°) — 4 × 10–12',
+      'Hamstring curl (machine) — 4 × 10–12',
+      'Hip abductor machine — 3 × 12–15',
+      'Hip adductor machine — 3 × 12–15',
+      'Calf raise (smith bar, no wrist load) — 3 × 12–15',
+      'Incline walk finisher — 10 min at 8–10% gradient'
+    ],
+    note: 'All wrist-safe. Knee angles capped at 90°. Bring straps.',
+    extras: [
+      { icon: '🍲', text: 'Batch cook today — 90 min. Grains, chicken, roast veg, dressings for the week.' },
+      { icon: '🫙', text: 'Prep 5 chia jars tonight for the week.' }
+    ],
+    snack: 'Apple + 25 g almond butter'
+  },
+  1: { // Monday
+    name: 'Monday',
+    type: 'zone2',
+    typeLabel: 'Zone 2',
+    title: 'Incline walk — 60–75 min',
+    exercises: [
+      'Treadmill: 4–5 km/h, 8–12% gradient',
+      'Heart rate: 130–145 bpm',
+      'Should be able to hold a conversation — not sing',
+      'Podcast or audiobook ready to go'
+    ],
+    note: 'Swap to the stationary bike if you want a change.',
+    extras: [],
+    snack: 'Carrot sticks + 50 g hummus + 6 olives'
+  },
+  2: { // Tuesday
+    name: 'Tuesday',
+    type: 'gym',
+    typeLabel: 'Gym',
+    title: 'Posterior chain + VMO',
+    exercises: [
+      'Romanian deadlift (with straps) — 4 × 8–10',
+      'Glute bridge / hip thrust on bench — 3 × 10–12',
+      'Cable pull-through (rope) — 3 × 12',
+      'VMO work: TKE or step-up — 3 × 10 each side',
+      'Bulgarian split squat (light) — 3 × 8 each side',
+      'Incline walk finisher — 10 min'
+    ],
+    note: 'Straps on all pulling. VMO work is non-negotiable today.',
+    extras: [],
+    snack: '200 g Greek yoghurt + 15 g honey + 10 g pistachios'
+  },
+  3: { // Wednesday
+    name: 'Wednesday',
+    type: 'zone2',
+    typeLabel: 'Zone 2',
+    title: 'Incline walk or bike — 60–75 min',
+    exercises: [
+      'Treadmill (incline) or stationary bike — your call',
+      'Heart rate: 130–145 bpm',
+      'Good day for a long podcast episode'
+    ],
+    note: 'Swap to the bike if the knee felt off after Tuesday.',
+    extras: [],
+    snack: '2 hard-boiled eggs + 1 piece of fruit'
+  },
+  4: { // Thursday
+    name: 'Thursday',
+    type: 'gym',
+    typeLabel: 'Gym',
+    title: 'Full-body wrist-safe + core',
+    exercises: [
+      'Chest press machine (neutral grip) — 3 × 10–12',
+      'Seated cable row with straps — 3 × 10–12',
+      'Lat pulldown with straps — 3 × 10–12',
+      'Cable face pull (rope) — 3 × 12–15',
+      'Dead bug — 3 × 10 each side',
+      'Bird dog — 3 × 10 each side',
+      'Side plank (forearm) — 3 × 30 sec each side',
+      'Pallof press — 3 × 10 each side'
+    ],
+    note: 'End of the work week. Core is the focus — no wrist loading needed.',
+    extras: [],
+    snack: 'Cottage cheese (150 g) + cucumber + black pepper'
+  },
+  5: { // Friday
+    name: 'Friday',
+    type: 'rest',
+    typeLabel: 'Rest day',
+    title: 'Family walk — 30–45 min',
+    exercises: [
+      'Walk with the kids — no pace target, just move',
+      'Evening mobility routine (12 min)'
+    ],
+    note: 'No gym. Eating window stays — chia breakfast 9–10am, lunch 1pm, dinner 5–6pm.',
+    extras: [
+      { icon: '⚽', text: 'Weekend: one live match is in the budget. Check the kickoff time.' }
+    ],
+    snack: 'Weekend — one planned snack still beats one impulsive one'
+  },
+  6: { // Saturday
+    name: 'Saturday',
+    type: 'rest',
+    typeLabel: 'Rest day',
+    title: 'Family walk + prep',
+    exercises: [
+      'Walk with the kids — 30–45 min',
+      'Evening mobility routine (12 min)'
+    ],
+    note: 'Plan the Sunday batch cook tonight. Shopping done?',
+    extras: [
+      { icon: '🫙', text: 'Pre-portion 5 chia jars tonight. 10 minutes. Saves the whole week.' },
+      { icon: '🛒', text: 'Make sure you have grains, protein, and veg for tomorrow\'s batch cook.' }
+    ],
+    snack: 'Weekend — stick to the approved list or close to it'
+  }
+};
+
+const CHECKLIST_BASE = [
+  { id: 'water', text: '500 ml water on waking' },
+  { id: 'acv', text: 'ACV + honey at 7:15am — use the straw' },
+  { id: 'snack_plan', text: 'Decided today\'s 3:30pm snack — it\'s already out' },
+  { id: 'mobility', text: 'Evening mobility routine (12 min)' },
+  { id: 'splints', text: 'Splints on at 10pm' },
+  { id: 'bed', text: 'In bed by 10:30pm' }
+];
+
+const CHECKLIST_GYM_EXTRA = [
+  { id: 'collagen', text: 'Collagen + 500 mg vit C at 7:50am (30 min before gym)' },
+  { id: 'shake', text: 'Post-gym: whey shake + 5 g creatine' },
+  { id: 'vmo', text: 'VMO routine done — TKE, wall sit, step-ups, bridges, clamshells' }
+];
+
+const CHECKLIST_ZONE2_EXTRA = [
+  { id: 'collagen', text: 'Collagen + 500 mg vit C at 7:50am (before cardio)' },
+  { id: 'shake', text: 'Post-cardio: whey shake + 5 g creatine' }
+];
+
+function getTodayDateKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function formatDate(d) {
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function buildChecklist(dayNum, dateKey) {
+  let items = [...CHECKLIST_BASE];
+  if (dayNum === 0 || dayNum === 2 || dayNum === 4) {
+    items.splice(2, 0, ...CHECKLIST_GYM_EXTRA);
+  } else if (dayNum === 1 || dayNum === 3) {
+    items.splice(2, 0, ...CHECKLIST_ZONE2_EXTRA);
+  }
+
+  return items.map(item => {
+    const key = 'hp_daily_' + dateKey + '_' + item.id;
+    const checked = localStorage.getItem(key) === '1';
+    return { ...item, key, checked };
+  });
+}
+
+function renderToday() {
+  const now = new Date();
+  const dayNum = now.getDay();
+  const dateKey = getTodayDateKey();
+  const data = DAY_DATA[dayNum];
+  const checklist = buildChecklist(dayNum, dateKey);
+
+  const exercisesHTML = data.exercises.map(ex =>
+    `<li>${ex}</li>`
+  ).join('');
+
+  const extrasHTML = data.extras.length
+    ? data.extras.map(e => `
+        <div class="card accent" style="margin:8px 0;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;">
+          <span style="font-size:18px;flex-shrink:0">${e.icon}</span>
+          <span style="font-size:14px">${e.text}</span>
+        </div>`).join('')
+    : '';
+
+  const checklistHTML = checklist.map(item => `
+    <div class="check" id="wrap_${item.id}">
+      <input type="checkbox" id="cl_${item.id}" ${item.checked ? 'checked' : ''}>
+      <label for="cl_${item.id}" class="${item.checked ? 'done' : ''}">${item.text}</label>
+    </div>
+  `).join('');
+
+  document.getElementById('today-content').innerHTML = `
+    <div class="today-day">${data.name}</div>
+    <div class="today-title">${data.title}</div>
+    <div class="today-date">${formatDate(now)}</div>
+
+    <span class="workout-type ${data.type}">${data.typeLabel}</span>
+
+    <ul class="exercise-list">${exercisesHTML}</ul>
+    <p class="note-text">${data.note}</p>
+
+    ${extrasHTML}
+
+    <div class="section-divider"></div>
+
+    <h3 style="margin-top:0">Today's snack (3:30pm)</h3>
+    <div class="card accent" style="padding:12px 14px;margin-bottom:18px">
+      <span style="font-size:14px">${data.snack}</span>
+    </div>
+
+    <h3>Morning checklist</h3>
+    <div id="today-checklist">${checklistHTML}</div>
+
+    <div style="margin-top:16px">
+      <button onclick="resetChecklist()" style="font-size:13px;color:var(--muted);background:none;border:1px solid var(--line);padding:6px 12px;border-radius:6px;cursor:pointer;font-family:inherit">Reset checklist</button>
+    </div>
+  `;
+
+  // Wire up checklist persistence
+  checklist.forEach(item => {
+    const cb = document.getElementById('cl_' + item.id);
+    const lbl = cb ? cb.nextElementSibling : null;
+    if (cb) {
+      cb.addEventListener('change', () => {
+        localStorage.setItem(item.key, cb.checked ? '1' : '0');
+        if (lbl) lbl.classList.toggle('done', cb.checked);
+      });
+    }
+  });
+}
+
+function resetChecklist() {
+  const dateKey = getTodayDateKey();
+  const keys = ['water','acv','collagen','shake','vmo','snack_plan','mobility','splints','bed'];
+  keys.forEach(k => localStorage.removeItem('hp_daily_' + dateKey + '_' + k));
+  renderToday();
+}
+
+renderToday();
+</script>
+
+</body>
+</html>
